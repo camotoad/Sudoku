@@ -11,6 +11,18 @@ board = [
 ]  # https://www.websudoku.com/?level=1&set_id=5108128121
 
 
+fakeboard = [
+    [0,0,6,8,0,0,5,1,0],
+    [0,0,5,0,4,6,0,9,0],
+    [0,0,2,0,5,0,0,0,3],
+    [5,0,8,0,0,2,0,0,0],
+    [6,1,0,9,0,3,0,5,7],
+    [0,0,0,4,0,0,8,0,9],
+    [5,0,0,0,7,0,3,0,0],
+    [0,5,0,2,3,0,9,0,0],
+    [0,3,7,0,0,8,1,0,0]
+]  # to test a non valid gameboard
+
 def print_board(bp):  # bp=board parameter
     for i in range(len(bp)):
         if i % 3 == 0 and i != 0:
@@ -85,8 +97,17 @@ def solve(bp):
     return False
 
 
-print("start: ")
-print_board(board)
-solve(board)
-print("\n solved:")
-print_board(board)
+# print("start: ")
+# print_board(board)
+# solve(board)
+# print("\n solved:")
+# print_board(board)
+
+# print("start: ")
+# print_board(fakeboard)
+# solve(fakeboard)
+# if solve(fakeboard):
+#     print("\n Solution:")
+#     print_board(fakeboard)
+# else:
+#     print("Can't be solved")
