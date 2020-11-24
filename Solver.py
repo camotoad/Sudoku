@@ -1,27 +1,27 @@
 board = [
-    [0,0,6,8,0,0,5,1,0],
-    [0,0,5,0,4,6,0,9,0],
-    [0,0,2,0,5,0,0,0,3],
-    [5,0,8,0,0,2,0,0,0],
-    [6,1,0,9,0,3,0,5,7],
-    [0,0,0,4,0,0,8,0,9],
-    [4,0,0,0,7,0,3,0,0],
-    [0,5,0,2,3,0,9,0,0],
-    [0,3,7,0,0,8,1,0,0]
+    [0, 0, 6, 8, 0, 0, 5, 1, 0],
+    [0, 0, 5, 0, 4, 6, 0, 9, 0],
+    [0, 0, 2, 0, 5, 0, 0, 0, 3],
+    [5, 0, 8, 0, 0, 2, 0, 0, 0],
+    [6, 1, 0, 9, 0, 3, 0, 5, 7],
+    [0, 0, 0, 4, 0, 0, 8, 0, 9],
+    [4, 0, 0, 0, 7, 0, 3, 0, 0],
+    [0, 5, 0, 2, 3, 0, 9, 0, 0],
+    [0, 3, 7, 0, 0, 8, 1, 0, 0]
 ]  # https://www.websudoku.com/?level=1&set_id=5108128121
 
-
 fakeboard = [
-    [0,0,6,8,0,0,5,1,0],
-    [0,0,5,0,4,6,0,9,0],
-    [0,0,2,0,5,0,0,0,3],
-    [5,0,8,0,0,2,0,0,0],
-    [6,1,0,9,0,3,0,5,7],
-    [0,0,0,4,0,0,8,0,9],
-    [5,0,0,0,7,0,3,0,0],
-    [0,5,0,2,3,0,9,0,0],
-    [0,3,7,0,0,8,1,0,0]
+    [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]  # to test a non valid gameboard
+
 
 def print_board(bp):  # bp=board parameter
     for i in range(len(bp)):
@@ -42,7 +42,7 @@ def find_empty(bp):
     for i in range(len(bp)):
         for j in range(len(bp[0])):
             if bp[i][j] == 0:
-                return (i, j)    # i=row j=column
+                return (i, j)  # i=row j=column
 
     return None
 
@@ -69,7 +69,7 @@ def valid(bp, num, pos):  # checking if number in box is valid
     # -   -   -   -   -   -
     # | 0, 2 | 1, 2 | 2, 2 |
 
-    for i in range(box_y*3, box_y*3+3):
+    for i in range(box_y * 3, box_y * 3 + 3):
         for j in range(box_x * 3, box_x * 3 + 3):
             if bp[i][j] == num and (i, j) != pos:
                 return False
@@ -81,7 +81,7 @@ def valid(bp, num, pos):  # checking if number in box is valid
 def solve(bp):
     find = find_empty(bp)
     if not find:  # if empty cannot be found
-        return True     # solved
+        return True  # solved
     else:
         row, col = find
 

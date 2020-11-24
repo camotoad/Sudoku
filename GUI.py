@@ -1,12 +1,17 @@
+import tkinter as tk
+from tkinter import *
+from tkinter import messagebox
 import pygame, sys
 from Solver import solve, valid, find_empty, print_board
 import time
 from pygame.locals import *
+
 pygame.init()
 mainClock = pygame.time.Clock()
 pygame.font.init()
 font = pygame.font.SysFont("comicsans", 40)
 font2 = pygame.font.SysFont("comicsans", 80)
+font3 = pygame.font.SysFont("comicsans", 30)
 
 # colours
 color_black = (0, 0, 0)
@@ -28,6 +33,7 @@ def main_menu():
     pygame.display.set_caption('Main Menu')
     buttonsolve = pygame.Rect(50, 100, 200, 50)
     buttonplay = pygame.Rect(50, 175, 200, 50)
+    clicked = False
 
     while True:
         screen.fill(color_white)
@@ -47,7 +53,8 @@ def main_menu():
                 # pass
         if buttonplay.collidepoint((mx, my)):
             if clicked:
-                pass
+                Tk().wm_withdraw()
+                messagebox.showinfo('Notice', 'Under Construction')
         clicked = False
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -84,39 +91,56 @@ def solve_window():
                     # pygame.quit()
                     pygame.display.set_mode((300, 250), 0, 32)
                     running = False
-                if event.key == pygame.K_1:
+                if event.key == pygame.K_1 or event.key == pygame.K_KP1:
                     key = 1
-                if event.key == pygame.K_2:
+                if event.key == pygame.K_2 or event.key == pygame.K_KP2:
                     key = 2
-                if event.key == pygame.K_3:
+                if event.key == pygame.K_3 or event.key == pygame.K_KP3:
                     key = 3
-                if event.key == pygame.K_4:
+                if event.key == pygame.K_4 or event.key == pygame.K_KP4:
                     key = 4
-                if event.key == pygame.K_5:
+                if event.key == pygame.K_5 or event.key == pygame.K_KP5:
                     key = 5
-                if event.key == pygame.K_6:
+                if event.key == pygame.K_6 or event.key == pygame.K_KP6:
                     key = 6
-                if event.key == pygame.K_7:
+                if event.key == pygame.K_7 or event.key == pygame.K_KP7:
                     key = 7
-                if event.key == pygame.K_8:
+                if event.key == pygame.K_8 or event.key == pygame.K_KP8:
                     key = 8
-                if event.key == pygame.K_9:
+                if event.key == pygame.K_9 or event.key == pygame.K_KP9:
                     key = 9
-                if event.key == pygame.K_DELETE:
+                if event.key == pygame.K_DELETE or event.key == pygame.K_BACKSPACE:
                     key = 0
-                if event.key == pygame.K_SPACE:
-                    board.update_model()
-                    print_board(board.model)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                clicked = board.click(pos)
-                if clicked:
-                    board.select(clicked[0], clicked[1])
-                    key = None
+                # if event.key == pygame.K_SPACE:  # used for debug
+                #     board.clean()
+                #     board.update_model()
+                #     print_board(board.model)
+            try:
+                if event.type == pygame.MOUSEBUTTONDOWN:  # mouse selects a box
+                    pos = pygame.mouse.get_pos()
+                    clicked = board.click(pos)
+                    if clicked:
+                        board.select(clicked[0], clicked[1])
+                        key = None
+                    elif board.clearclick(pos):
+                        board.clean()
+                        board.update_model()
+                        key = 0
+                    elif board.solveclick(pos):
+                        if board.validate():    # have to check before solving or else the program will hang
+                            if solve(board.model):
+                                board.solve()
+                            else:
+                                Tk().wm_withdraw()
+                                messagebox.showinfo('Notice', 'This puzzle is not solvable')
+                        else:
+                            Tk().wm_withdraw()
+                            messagebox.showinfo('Notice', 'This puzzle is not solvable')
+            finally:
+                pass
 
         if board.selected and key is not None:
             board.place(key)
-            # print_board(board.board)
 
         redraw_solver(screen2, board)
         pygame.display.update()
@@ -142,8 +166,9 @@ class Box:
         y = self.row * gap
 
         if self.value != 0:
-            text = font.render(str(self.value), True, color_black)  # drawtext(text, font, color, win, x, y)
-            win.blit(text, (x + (gap / 2 - text.get_width() / 2), y + (gap / 2 - text.get_height() / 2)))
+            text = font.render(str(self.value), True, color_black)
+            win.blit(text,
+                     (x + (gap / 2 - text.get_width() / 2), y + (gap / 2 - text.get_height() / 2)))  # drawing numbers
         if self.selected:
             pygame.draw.rect(win, color_red, (x, y, gap, gap), 3)
 
@@ -172,11 +197,18 @@ class Grid:
         self.height = height
         self.model = None
         self.selected = None
+        self.buttonsolve = pygame.Rect(300, 550, 150, 35)  # menu buttons
+        self.buttonclear = pygame.Rect(90, 550, 150, 35)
 
-    def update_model(self):     # updating the board
+    def update_model(self):  # updating the board
         self.model = [[self.box[i][j].value for j in range(self.cols)] for i in range(self.rows)]
 
-    def place(self, value):     # putting new numbers in
+    def clean(self):  # clear board
+        for i in range(self.rows):
+            for j in range(self.cols):
+                self.box[i][j].value = 0
+
+    def place(self, value):  # putting new numbers in
         row, col = self.selected
         self.box[row][col].set(value)
         self.update_model()
@@ -193,9 +225,21 @@ class Grid:
             pygame.draw.line(win, color_black, (0, i * gap), (self.width, i * gap), thick)
             pygame.draw.line(win, color_black, (i * gap, 0), (i * gap, self.height), thick)
 
-        for i in range(self.rows):      # drawing boxes
+        for i in range(self.rows):  # drawing boxes
             for j in range(self.cols):
                 self.box[i][j].draw(win)
+
+        pygame.draw.rect(win, color_red, self.buttonsolve)
+        pygame.draw.rect(win, color_red, self.buttonclear)
+        solvetext = font3.render('Solve Puzzle', True, color_black)
+        cleartext = font3.render('Clear Board', True, color_black)
+        solverect = solvetext.get_rect(center=(self.buttonsolve.left + (self.buttonsolve.width / 2),
+                                               self.buttonsolve.top + (self.buttonsolve.height / 2) + 2))
+
+        clearrect = cleartext.get_rect(center=(self.buttonclear.left * 2 - (self.buttonclear.width / 10),
+                                               self.buttonclear.top + (self.buttonclear.height / 2) + 2))
+        win.blit(solvetext, solverect)
+        win.blit(cleartext, clearrect)
 
     def select(self, row, col):
         for i in range(self.rows):
@@ -206,13 +250,51 @@ class Grid:
         self.selected = (row, col)
 
     def click(self, pos):
-        if pos[0] < self.width and pos [1] < self.height:  # clicks are within the game screen
+        if pos[0] < self.width and pos[1] < self.height:  # clicks are within the game screen
             gap = self.width / 9
             x = pos[0] // gap
             y = pos[1] // gap
             return (int(y), int(x))
         else:
             return None
+
+    def clearclick(self, pos):
+        if self.buttonclear.collidepoint(pos[0], pos[1]):
+            return True
+        else:
+            return False
+
+    def solveclick(self, pos):
+        if self.buttonsolve.collidepoint((pos[0], pos[1])):
+            return True
+        else:
+            Tk().wm_withdraw()
+            messagebox.showinfo('Notice', 'This puzzle is not solvable')
+
+    def solve(self):
+        if solve(self.model):
+            # print_board(self.model)
+            self.board = self.model.copy()
+            # print_board(self.box)
+            for i in range(self.rows):  # drawing boxes
+                for j in range(self.cols):
+                    self.box[i][j].set(self.board[i][j])
+            self.update_model()
+            # print_board(self.model)
+            # print("draw")
+
+    def validate(self):
+        self.update_model()
+        print_board(self.model)
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.model[i][j] != 0:
+                    if valid(self.model, self.model[i][j], (i, j)):
+                        pass
+                        # print(self.model[i][j])
+                    else:
+                        return False
+        return True
 
 
 def redraw_solver(win, board):
