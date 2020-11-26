@@ -130,6 +130,7 @@ def solve_window():
                         if board.validate():    # have to check before solving or else the program will hang
                             if solve(board.model):
                                 board.solve()
+                                key = None
                             else:
                                 Tk().wm_withdraw()
                                 messagebox.showinfo('Notice', 'This puzzle is not solvable')
@@ -285,7 +286,7 @@ class Grid:
 
     def validate(self):
         self.update_model()
-        print_board(self.model)
+        # print_board(self.model)
         for i in range(self.rows):
             for j in range(self.cols):
                 if self.model[i][j] != 0:
