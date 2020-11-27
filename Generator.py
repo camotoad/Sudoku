@@ -17,6 +17,12 @@ board = [
 ]
 
 
+def clearboard():
+    for i in range(0, 8):
+        for j in range(0, 8):
+            board[i][j].value = 0
+
+
 def generate():
     rand = randint(15, 26)
     # print(rand)
@@ -46,6 +52,7 @@ def generate():
         if solve(board):
             return temp
         else:
+            clearboard()
             generate()
 
 
@@ -61,4 +68,4 @@ class recursionlimit:
         sys.setrecursionlimit(self.old_limit)
 
 
-print_board(generate())
+# print_board(generate())
