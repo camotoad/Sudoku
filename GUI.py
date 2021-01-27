@@ -11,7 +11,7 @@ from pygame.locals import *
 pygame.init()
 mainClock = pygame.time.Clock()
 pygame.font.init()
-font = pygame.font.SysFont("comicsans", 40)
+font1 = pygame.font.SysFont("comicsans", 40)
 font2 = pygame.font.SysFont("comicsans", 80)
 font3 = pygame.font.SysFont("comicsans", 30)
 
@@ -43,8 +43,8 @@ def main_menu():
         pygame.draw.rect(screen, color_red, buttonsolve)
         pygame.draw.rect(screen, color_red, buttonplay)
 
-        drawtext('Puzzle Solver', font, color_black, screen, buttonsolve.left + 5, buttonsolve.bottom / 2 + 37)
-        drawtext('Play a Game', font, color_black, screen, buttonplay.left + 17, buttonplay.centery - 10)
+        drawtext('Puzzle Solver', font1, color_black, screen, buttonsolve.left + 5, buttonsolve.bottom / 2 + 37)
+        drawtext('Play a Game', font1, color_black, screen, buttonplay.left + 17, buttonplay.centery - 10)
         drawtext('Sudoku', font2, color_black, screen, 45, 25)
         pygame.display.update()
 
@@ -247,7 +247,7 @@ class Box:
         y = self.row * gap
 
         if self.value != 0:
-            text = font.render(str(self.value), True, color_black)
+            text = font1.render(str(self.value), True, color_black)
             win.blit(text,
                      (x + (gap / 2 - text.get_width() / 2), y + (gap / 2 - text.get_height() / 2)))  # drawing numbers
         if self.selected:
@@ -259,10 +259,10 @@ class Box:
         y = self.row * gap
 
         if self.temp != 0 and self.value == 0:
-            text = font.render(str(self.temp), True, color_grey)
+            text = font1.render(str(self.temp), True, color_grey)
             win.blit(text, (x+5, y + 5))
         elif not (self.value == 0):
-            text = font.render(str(self.value), True, color_black)
+            text = font1.render(str(self.value), True, color_black)
             win.blit(text, (x + (gap / 2 - text.get_width() / 2), y + (gap / 2 - text.get_height() / 2)))
         if self.selected:
             pygame.draw.rect(win, color_red, (x, y, gap, gap), 3)
