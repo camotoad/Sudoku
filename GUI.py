@@ -204,6 +204,8 @@ def play_window():
                     board2.select(clicked[0], clicked[1])
                     key = None
                 elif board2.leftbuttonclick(pos2):
+                    board2.clean()
+                    board2.update_model()
                     board2.update_board(generate())
                     key = None
                 elif board2.rightbuttonclick(pos2):
